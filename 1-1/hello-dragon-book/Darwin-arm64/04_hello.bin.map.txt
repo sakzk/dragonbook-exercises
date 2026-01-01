@@ -1,0 +1,22 @@
+# Path: Darwin-arm64/04_hello.bin
+# Arch: arm64
+# Object files:
+[  0] linker synthesized
+[  1] Darwin-arm64/03_hello.o
+[  2] /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/libSystem.tbd
+[  3] /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/system/libsystem_c.tbd
+# Sections:
+# Address	Size    	Segment	Section
+0x100000460	0x00000034	__TEXT	__text
+0x100000494	0x0000000C	__TEXT	__stubs
+0x1000004A0	0x00000015	__TEXT	__cstring
+0x1000004B8	0x00000058	__TEXT	__unwind_info
+0x100004000	0x00000008	__DATA_CONST	__got
+# Symbols:
+# Address	Size    	File  Name
+0x100000000	0x00000000	[  0] __mh_execute_header
+0x100000460	0x00000034	[  1] _main
+0x100000494	0x0000000C	[  3] _printf.stub
+0x1000004A0	0x00000015	[  1] literal string: Hello, Dragon Book!\n
+0x1000004B8	0x00000058	[  0] compact unwind info
+0x100004000	0x00000008	[  3] _printf.got

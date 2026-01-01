@@ -1,0 +1,19 @@
+
+Darwin-arm64/03_hello.o:	file format mach-o arm64
+
+Disassembly of section __TEXT,__text:
+
+0000000000000000 <ltmp0>:
+       0: d10083ff     	sub	sp, sp, #0x20
+       4: a9017bfd     	stp	x29, x30, [sp, #0x10]
+       8: 910043fd     	add	x29, sp, #0x10
+       c: 52800008     	mov	w8, #0x0                ; =0
+      10: b9000be8     	str	w8, [sp, #0x8]
+      14: b81fc3bf     	stur	wzr, [x29, #-0x4]
+      18: 90000000     	adrp	x0, 0x0 <ltmp0>
+      1c: 91000000     	add	x0, x0, #0x0
+      20: 94000000     	bl	0x20 <ltmp0+0x20>
+      24: b9400be0     	ldr	w0, [sp, #0x8]
+      28: a9417bfd     	ldp	x29, x30, [sp, #0x10]
+      2c: 910083ff     	add	sp, sp, #0x20
+      30: d65f03c0     	ret
