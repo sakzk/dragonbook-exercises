@@ -16,6 +16,7 @@ public class Lexer{
   }
 
   // Scan()
+  // EOF のときは､scan() は token.tag=65535 を返す｡ (System.in.read() で､EOFは -1になり､そいつを､charでキャストしているため｡
   public Token scan() throws IOException {
     // 空白類文字の読み飛ばし
     for (;; peek = (char)System.in.read()){
@@ -78,16 +79,18 @@ public class Lexer{
 
     }
     // 後片付け
+    // 文字列の最後だと､peek == 65535 になる
     Token t = new Token(peek);
     peek = ' ';
     return t;
   }
 
   // 🚀 テストを実行するための共通メソッド（関数化）
-  public static void runTest(String testInput, int expectedTokenCount) {
+  public static void runTest(String testInput) {
     // System.in (標準入力) を一時的にテスト用文字列に置き換える
     InputStream originalIn = System.in;
     System.setIn(new ByteArrayInputStream(testInput.getBytes()));
+    int token_count = 0;
 
     try {
       System.out.println("\n========================================");
@@ -97,11 +100,20 @@ public class Lexer{
       Lexer lexer = new Lexer();
 
       // 指定された回数だけトークンをスキャンする
-      for (int i = 0; i < expectedTokenCount; i++) {
-        Token token = lexer.scan();
+      // for (int i = 0; i < expectedTokenCount; i++) {
+      //   Token token = lexer.scan();
 
-        // トークンの情報を表示
-        System.out.println("Token " + (i + 1) + ": " + token.toString() + " (Tag: " + token.tag + ")");
+      //   // トークンの情報を表示
+      //   System.out.println("Token " + (i + 1) + ": " + token.toString() + " (Tag: " + token.tag + ")");
+      // }
+      while (true){
+        Token token = lexer.scan();
+        // token.Tag.equals(""); バグ
+        if (token.tag == 65535){
+          break;
+        }
+        System.out.println("Token " + (token_count + 1) + ": " + token.toString() + " (Tag: " + token.tag + ")");
+        token_count++;
       }
 
       System.out.println("----------------------------------------");
@@ -120,32 +132,31 @@ public class Lexer{
   public static void main(String[] args) {
     System.out.println("--- 字句解析（Lexer）複数ケーステスト開始 ---");
 
+    // 実験
+    runTest("");
+      // -> Token 1: <Tag: 65535> (Tag: 65535)
+
     // ケース1: 元のハッピーパス (トークン5個分)
     // 期待されるトークン: true, 46, false, apple, ;
-    runTest("true 46\nfalse apple;", 5);
+    runTest("true 46\nfalse apple;");
 
     // ケース2: 数値と演算子（半角スペース区切り）(トークン5個分)
     // 期待されるトークン: 10, +, 20, =, 30
-    runTest("10 + 20 = 30", 5);
+    runTest("10 + 20 = 30");
 
     // ケース3: タブや改行が入り混じったパターン (トークン4個分)
     // 期待されるトークン: true, count, 999, false
-    runTest("\ttrue\t\n  count  \n\n999 false", 4);
+    runTest("\ttrue\t\n  count  \n\n999 false");
 
     // ケース4: 予約語の直後に文字が続くパターン（識別子として処理されるかのテスト） (トークン1個分)
     // 期待されるトークン: trueabc (単なるIDであり、予約語のtrueとは別物になるはず)
-    runTest("trueabc", 1);
+    runTest("trueabc");
 
     // ケース5: 行コメント
-    runTest("// this line is comment\n", 1); // 改行ありバージョン [調査] 改行をリテラルで書くための記法
-    // runTest("// this line is comment\n", 5); // 改行ありバージョン [調査] 改行をリテラルで書くための記法
-      // ExpectedTokenCound > 実際のトークン数 のときに､Tagになって出てくる
-      // Token 1: <COMMENT, tag: 257, lexeme: "// this line is comment"> (Tag: 257)
-      // Token 2: <Tag: 65535> (Tag: 65535)
-    runTest("10 + 20 = 30 //", 6);
-    runTest("10 + 20 = 30 //", 6); // Javaの文字列はNull終端されている?
-    runTest("10 + 20 = 30 //meaning less", 6);
-    runTest("10 + 20 = 30 // meaning less", 6);
+    runTest("// this line is comment\n"); // 改行ありバージョン [調査] 改行をリテラルで書くための記法
+    runTest("10 + 20 = 30 //");
+    runTest("10 + 20 = 30 //meaning less");
+    runTest("10 + 20 = 30 // meaning less");
 
     System.out.println("\n--- すべてのテストケースの呼び出しが完了しました ---");
   }
