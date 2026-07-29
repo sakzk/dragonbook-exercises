@@ -25,6 +25,33 @@ public class Lexer{
         line = line + 1;
       else break;
     }
+    // TODO: コメントのサポート
+    /* 無限ループになります
+    ========================================
+    入力文字列:
+    // this line is comment
+    ----------------------------------------
+    ^C%
+    */
+    if (peek == '/'){
+      StringBuffer b = new StringBuffer();
+      b.append(peek);
+      peek = (char)System.in.read();
+      // 行コメント
+      if (peek == '/'){
+        while (peek != '\n'){
+          b.append(peek);
+          peek = (char)System.in.read();
+        }
+      }
+      line = line + 1;
+      // ブロックコメント
+      String s = b.toString();
+      Comment c = new Comment(Tag.ID, s);
+      return c;
+    }
+
+    // 算術演算子
     // 数値
     if (Character.isDigit(peek)){
       int v = 0;
@@ -35,7 +62,7 @@ public class Lexer{
       return new Num(v);
     }
     // id
-    if (Character.isLetter(peek)){
+    if (Character.isLetter(peek)){ // Character.isLetter は何が含まれる? 特殊記号も含まれる?
       StringBuffer b = new StringBuffer();
       do {
         b.append(peek);
@@ -108,6 +135,17 @@ public class Lexer{
     // ケース4: 予約語の直後に文字が続くパターン（識別子として処理されるかのテスト） (トークン1個分)
     // 期待されるトークン: trueabc (単なるIDであり、予約語のtrueとは別物になるはず)
     runTest("trueabc", 1);
+
+    // ケース5: 行コメント
+    runTest("// this line is comment\n", 1); // 改行ありバージョン [調査] 改行をリテラルで書くための記法
+    // runTest("// this line is comment\n", 5); // 改行ありバージョン [調査] 改行をリテラルで書くための記法
+      // ExpectedTokenCound > 実際のトークン数 のときに､Tagになって出てくる
+      // Token 1: <COMMENT, tag: 257, lexeme: "// this line is comment"> (Tag: 257)
+      // Token 2: <Tag: 65535> (Tag: 65535)
+    runTest("10 + 20 = 30 //", 6);
+    runTest("10 + 20 = 30 //", 6); // Javaの文字列はNull終端されている?
+    runTest("10 + 20 = 30 //meaning less", 6);
+    runTest("10 + 20 = 30 // meaning less", 6);
 
     System.out.println("\n--- すべてのテストケースの呼び出しが完了しました ---");
   }
