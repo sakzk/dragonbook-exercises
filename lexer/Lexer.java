@@ -40,12 +40,15 @@ public class Lexer{
       peek = (char)System.in.read();
       // 行コメント
       if (peek == '/'){
-        while (peek != '\n'){
+        while (peek != '\n' && peek != (char)65535){ // TODO: もっと良い書き方がある気がする
           b.append(peek);
           peek = (char)System.in.read();
         }
       }
-      line = line + 1;
+      if (peek == '\n') {
+        line = line + 1;
+      }
+
       // ブロックコメント
       String s = b.toString();
       Comment c = new Comment(Tag.ID, s);
@@ -154,8 +157,8 @@ public class Lexer{
 
     // ケース5: 行コメント
     runTest("// this line is comment\n"); // 改行ありバージョン [調査] 改行をリテラルで書くための記法
+    runTest("//");
     runTest("10 + 20 = 30 //");
-    runTest("10 + 20 = 30 //meaning less");
     runTest("10 + 20 = 30 // meaning less");
 
     System.out.println("\n--- すべてのテストケースの呼び出しが完了しました ---");
